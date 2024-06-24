@@ -9,6 +9,7 @@ This is an example of a game developed on the Ton chain using the Cocos game eng
 * On-chain transactions
 * Sharing on Telegram Mini APP
 * Payment
+* Using [game-engines-sdk](https://github.com/CocosTechLabs/game-engines-sdk)
 
 ## Screenshots
 

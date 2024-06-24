@@ -61,11 +61,10 @@ export class GameResult extends Component {
     }
 
     public onShare() {
-        TelegramWebApp.Instace.share("https://t.me/TonSTBot/toncocossdk", "This is a test url");
+        TelegramWebApp.Instace.share("https://t.me/cocos_demo_bot/game", "Invite you to play an interesting game");
     }
 
     private _showClaimTip(isVisible: boolean) {
-        // this.claimTip && (this.claimTip.active = isVisible);
     }
 
     public gotoHomePage() {
