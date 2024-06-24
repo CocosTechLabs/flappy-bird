@@ -1,0 +1,10 @@
+{
+  "name": "MiniGame",
+  "uuid": "57f0875f-d7bc-43b5-b64f-3a298b817fe8",
+  "creator": {
+    "version": "3.8.3"
+  },
+  "dependencies": {
+    "@cocos-labs/game-sdk": "^0.0.4"
+  }
+}

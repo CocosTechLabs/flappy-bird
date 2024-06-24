@@ -1,0 +1,49 @@
+{
+  "__version__": "1.0.6",
+  "physics": {
+    "collisionGroups": [
+      {
+        "index": 1,
+        "name": "pipe"
+      },
+      {
+        "index": 2,
+        "name": "ground"
+      },
+      {
+        "index": 3,
+        "name": "sky"
+      },
+      {
+        "index": 4,
+        "name": "bird"
+      },
+      {
+        "index": 5,
+        "name": "pass"
+      },
+      {
+        "index": 6,
+        "name": "coin"
+      }
+    ],
+    "collisionMatrix": {
+      "0": 1,
+      "1": 16,
+      "2": 16,
+      "3": 16,
+      "4": 110,
+      "5": 16,
+      "6": 16
+    }
+  },
+  "general": {
+    "designResolution": {
+      "fitHeight": false,
+      "fitWidth": false
+    }
+  },
+  "script": {
+    "preserveSymlinks": true
+  }
+}
