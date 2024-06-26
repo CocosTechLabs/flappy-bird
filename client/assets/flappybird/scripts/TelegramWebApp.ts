@@ -78,6 +78,14 @@ export class TelegramWebApp {
         return this._tgWebAppJS.initData;
     }
 
+    public openInvoice(url: string, callback: any) {
+        if (!this._tgWebAppJS) {
+            console.error("telegram web app is not inited!");
+            return null;
+        } 
+        this._tgWebAppJS.openInvoice(url, callback);
+    }
+
     public alert(message: string) {
         this._tgWebAppJS.showAlert(message);
     }

@@ -1,0 +1,15 @@
+NODE_ENV=testnet
+
+# Web Server Configuration
+CORS_ENABLED=true
+CORS_ORIGIN=http://127.0.0.1:7456
+
+# Network Configuration
+NETWORK=testnet
+
+# Your MNEMONIC, 24 words separated by spaces
+MNEMONIC=[]
+
+
+# Bot Token
+TELEGRAM_BOT_TOKEN=

@@ -13,8 +13,14 @@ import { Button } from 'cc';
 
 import { CocosGameFi, TonConnectUI, Address, toNano } from '@cocos-labs/game-sdk';
 import { TelegramWebApp } from './TelegramWebApp';
+import { ToolsView } from './ToolsView';
 
 const { ccclass, property } = _decorator;
+
+export interface TonAddressConfig {
+    tonAddress: string,
+    jettonAddress?: string;
+}
 
 @ccclass('FlappyBirdLite')
 export class FlappyBirdLite extends GameBase {
@@ -51,7 +57,7 @@ export class FlappyBirdLite extends GameBase {
     @property(Countdown)
     countdown: Countdown;
 
-
+    
 
     private _bird: FBird = null;
     private _touchStarted: boolean = false;
@@ -67,6 +73,9 @@ export class FlappyBirdLite extends GameBase {
     @property(Node)
     logo: Node;
 
+    @property(ToolsView)
+    toolView: ToolsView;
+
     private _bTonInit: boolean = false;
 
     private _cocosGameFi: CocosGameFi;
@@ -79,26 +88,47 @@ export class FlappyBirdLite extends GameBase {
             console.log("telegram web app init : ", res.success);
         });
 
+        fetch("http://127.0.0.1:3000/config", {method: 'GET'}).then(response => {
+            return response.json();
+        }).then(value => {
+            console.log("config : ", value);
+            if (value.ok) {
+
+                const addressConfig = {
+                    tonAddress: value.tokenRecipient,
+                    jettonAddress: value.jettonMaster
+                } as TonAddressConfig;
+                this.toolView.setTonAddressConfig(addressConfig); 
+
+            } else {
+                console.error('request config failed!');
+            }
+        });
+
         this._rigesterEvent();
         this._initPhyEnv();
-        this._intWebBridge();
 
-        this._initTonUIMgr();
+        this._initTonUI();
     }
 
-    async _initTonUIMgr() {
+    async _initTonUI() {
+
+        this.toolView.node.active = false;
 
         let uiconnector = new TonConnectUI({
             manifestUrl: 'https://ton-connect.github.io/demo-dapp-with-wallet/tonconnect-manifest.json'
         });
-        this._cocosGameFi = await CocosGameFi.create({ connector: uiconnector });
+        this._cocosGameFi = await CocosGameFi.create({ 
+            connector: uiconnector
+         });
         this._connectUI = this._cocosGameFi.walletConnector;
-
+  
         const unsubscribeModal = this._connectUI.onModalStateChange(state => {
             console.log("model state changed! : ", state);
 
             this.updateConnect();
         });
+
         const unsubscribeConnectUI = this._connectUI.onStatusChange(info => {
             console.log("wallet info status changed : ", info);
 
@@ -120,7 +150,7 @@ export class FlappyBirdLite extends GameBase {
     private updateConnect() {
         if (this.isConnected()) {
             const address = this._connectUI.account.address;
-            this.connectLabel.string = Address.parseRaw(address).toString({ testOnly: true, bounceable: false }).substring(0, 6) + '...';
+            this.connectLabel.string = Address.parseRaw(address).toString( {testOnly: true, bounceable: false }).substring(0, 6) + '...';
         } else {
             this.connectLabel.string = "Connect";
         }
@@ -134,7 +164,6 @@ export class FlappyBirdLite extends GameBase {
         } else {
             this._connectUI.openModal();
         }
-
     }
 
     start() {
@@ -164,13 +193,13 @@ export class FlappyBirdLite extends GameBase {
         if (this.scoreLbl) {
             this.scoreLbl.node.active = false;
         }
-        this._emitGameLoaded();
 
         if (this.countdown) {
             this.countdown.run(3, () => {
                 this.startGame();
             });
         }
+        
     }
 
     update(deltaTime: number) {
@@ -192,7 +221,7 @@ export class FlappyBirdLite extends GameBase {
         this.gameOverLayer.active = false;
         this.top.active = false;
         this.logo.active = true;
-
+        
     }
 
     protected onEnable(): void {
@@ -210,7 +239,6 @@ export class FlappyBirdLite extends GameBase {
             this.touchLayer.on(Input.EventType.TOUCH_END, this._onTouchEnd, this);
         }
         if (this.startLayer) {
-            // this.startLayer.on(Input.EventType.TOUCH_END, this.startGame, this);
         }
         if (this.gameOverLayer) {
             this.gameOverLayer.on(Input.EventType.TOUCH_END, this.resetGame, this);
@@ -292,6 +320,11 @@ export class FlappyBirdLite extends GameBase {
         this.levelMng.onUpdate();
     }
 
+    public onShowTools() {
+        this.toolView.node.active = true;
+        this.toolView.setGameFi(this._cocosGameFi);
+    }
+
     startGame() {
         this.startLayer && (this.startLayer.active = false);
         this.gameOverLayer && (this.gameOverLayer.active = false);
@@ -312,7 +345,6 @@ export class FlappyBirdLite extends GameBase {
     gameOver() {
         FBRecordManager.Instance().recordEnd();
         this.startLayer && (this.startLayer.active = false);
-        // this.gameOverLayer && (this.gameOverLayer.active = true);
         this._isGameRunning = false;
         this.bgScroll.setRun(false);
         this.groundScroll.setRun(false);
@@ -329,7 +361,6 @@ export class FlappyBirdLite extends GameBase {
             this.gameResult.init(data);
             this.gameResult.show();
         }
-        this._emitGameOver(this._score, FBRecordManager.Instance().getData());
     }
 
     protected _onGameResetCb(data: Record<string, never>): void {
@@ -339,11 +370,8 @@ export class FlappyBirdLite extends GameBase {
     resetGame(needStart: boolean = true) {
         this.startLayer && (this.startLayer.active = true);
         this.gameOverLayer && (this.gameOverLayer.active = false);
-        // this._isGameRunning = true;
         this._score = 0;
         this._nCoin = 0;
-        // this.bgScroll.setRun(true);
-        // this.groundScroll.setRun(true);
         this._bird?.reset();
         this.levelMng?.reset();
         if (this.gameResult) {
@@ -381,7 +409,6 @@ export class FlappyBirdLite extends GameBase {
 
     private _updateScore() {
         if (this.scoreLbl) {
-            // this.scoreLbl.string = this._score.toString();
             this.scoreLbl.string = this._nCoin.toString();
         }
     }

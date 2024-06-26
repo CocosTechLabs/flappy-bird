@@ -1,18 +1,4 @@
-/**
-* 对象池管理类
-*/
-/**
-* 根据预设从对象池中获取对应节点
-* @param {cc.prefab} prefab
-*/
-/**
-* 将对应节点放回对象池中
-* @param {cc.Node} node
-*/
-/**
-* 根据名称，清除对应对象池
-* @param {string} name
-*/
+
 import { NodePool, Prefab, _decorator, instantiate, Node } from 'cc';
 import { Singleton } from './Singleton';
 import { LogManager } from './LogManager';
@@ -33,7 +19,7 @@ export class PoolManager extends Singleton {
 
     public getNode(prefab: Prefab, parent: Node = null, is_exclusion: boolean = false): Node {
         let name = prefab.name;
-        if (is_exclusion) {  //同一类型只能创建一个 
+        if (is_exclusion) {  
             if (this.exclusion_dict[name]) {
                 return
             } else {
