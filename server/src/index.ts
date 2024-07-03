@@ -6,17 +6,29 @@ import { processTelegramData } from './telegram';
 import { z } from 'zod';
 import { Address, WalletContractV4 } from '@ton/ton';
 import { mnemonicToPrivateKey } from '@ton/crypto';
-
+import TelegramBot from 'node-telegram-bot-api';
 
 const playedRequest = z.object({
     tg_data: z.string(),
 });
+
 
 async function main() {
     let keyPair = await mnemonicToPrivateKey(config.MNEMONIC.split(' '));
     const publicKey = keyPair.publicKey.toString('hex');
     let workchain = 0; // Usually you need a workchain 0
     let wallet = WalletContractV4.create({ workchain, publicKey: Buffer.from(publicKey, 'hex') });
+
+    const bot = new TelegramBot(config.TELEGRAM_BOT_TOKEN, { polling: true });
+
+    bot.on('pre_checkout_query', async (msg) => {
+        console.log(msg);
+        await bot.answerPreCheckoutQuery(msg.id, true)
+    })
+
+    bot.on('successful_payment', (msg) => {
+        console.log(msg);
+    })
 
     const fastify = Fastify({
         logger: true
