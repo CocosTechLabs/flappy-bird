@@ -1,0 +1,1 @@
+"use strict";module.exports={description:"",show_log:""};

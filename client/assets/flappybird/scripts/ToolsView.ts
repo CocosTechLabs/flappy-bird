@@ -2,7 +2,8 @@ import { Label } from 'cc';
 import { Sprite } from 'cc';
 import { _decorator, Component, Node } from 'cc';
 import { Address, CocosGameFi, toNano, AssetsSDK } from '@cocos-labs/game-sdk';
-import { TelegramWebApp } from './TelegramWebApp';
+import { TelegramWebApp } from '../../cocos-telegram-miniapps/scripts/telegram-web';
+import { game } from 'cc';
 import { TonTransferRequest } from '@cocos-labs/game-sdk/lib/common/game-fi';
 import { assetManager, SpriteFrame, Texture2D } from 'cc';
 import { ImageAsset } from 'cc';
@@ -45,22 +46,21 @@ export class ToolsView extends Component {
 
     private updateTelegramInfo() {
     
-        const userData = TelegramWebApp.Instace.getTelegramUser();
+        const userData = TelegramWebApp.Instance.getTelegramUser();
         console.log("userData : ", userData);
-        if (userData && userData.user) {
-            const user = userData.user;
+        if (userData) {
             // load username
-            if (user.username) {
-                this.nameLab.string = user.username;
+            if (userData.username) {
+                this.nameLab.string = userData.username;
             } else {
-                this.nameLab.string = user.first_name + ' ' + user.lastname ? user.lastname : '';
+                this.nameLab.string = userData.first_name + ' ' + userData.last_name ? userData.last_name : '';
             }
 
             // load profile photo
-            if (user.photo_url) {
-                const fileExtension = user.photo_url.split('.').pop().toLowerCase();
+            if (userData.photo_url) {
+                const fileExtension = userData.photo_url.split('.').pop().toLowerCase();
                 if (fileExtension == 'jpeg' || fileExtension == 'jpg' || fileExtension == 'png') {
-                    assetManager.loadRemote<ImageAsset>(user.photo_url, function(err, imageAsset) {
+                    assetManager.loadRemote<ImageAsset>(userData.photo_url, function(err, imageAsset) {
                         const spriteFrame = new SpriteFrame();
                         const texture = new Texture2D();
                         texture.image = imageAsset;
@@ -100,7 +100,7 @@ export class ToolsView extends Component {
             const openJetton = _gameFi.assetsSdk.openJetton(jettonMasterAddress)
             const jettonContent = await openJetton.getContent()
             const message = "jetton name: " + jettonContent.name +"\njetton decimals: " + jettonContent.decimals
-            TelegramWebApp.Instace.alert(message)
+            TelegramWebApp.Instance.alert(message)
         }
         show(this._gameFi, jettonMasterAddress)
     }
@@ -112,13 +112,12 @@ export class ToolsView extends Component {
 
     public onShare() {
         let userId = '';
-        const userData = TelegramWebApp.Instace.getTelegramUser();
+        const userData = TelegramWebApp.Instance.getTelegramUser();
         console.log("userData : ", userData);
-        if (userData && userData.user) {
-            const user = userData.user;
-            userId = user.id;
+        if (userData) {
+            userId = userData.id + '';
         }
-        TelegramWebApp.Instace.share("https://t.me/cocos_demo_bot/game?startapp=ref_code_" + userId, "Invite you to play a very interesting game");
+        TelegramWebApp.Instance.share("https://t.me/cocos_demo_bot/game?startapp=ref_code_" + userId, "Invite you to play a very interesting game");
     }
 
     public onBuyWithStars() {
@@ -127,7 +126,7 @@ export class ToolsView extends Component {
         }).then(value => {
             console.log("starts invoice : ", value);
             if (value.ok) {
-                TelegramWebApp.Instace.openInvoice(value.invoiceLink, (result) => {
+                TelegramWebApp.Instance.openInvoice(value.invoiceLink, (result) => {
                     console.log("buy stars : ", result);
                 });
             } else {

@@ -1,6 +1,6 @@
 import { _decorator, Component, Label, Node, Vec3 } from 'cc';
 import { Utils } from '../../scripts/framework/common/Utils';
-import { TelegramWebApp } from './TelegramWebApp';
+import { TelegramWebApp } from '../../cocos-telegram-miniapps/scripts/telegram-web';
 const { ccclass, property } = _decorator;
 
 export interface GameResultInitParams {
@@ -53,7 +53,7 @@ export class GameResult extends Component {
     }
 
     public onShare() {
-        TelegramWebApp.Instace.share("https://t.me/cocos_demo_bot/game", "Invite you to play a very interesting game");
+        TelegramWebApp.Instance.share("https://t.me/cocos_demo_bot/game", "Invite you to play a very interesting game");
     }
 
 

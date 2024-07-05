@@ -12,6 +12,10 @@ const playedRequest = z.object({
     tg_data: z.string(),
 });
 
+const refundRequest = z.object({
+    tg_payment_charge_id: z.string(),
+});
+
 
 async function main() {
     let keyPair = await mnemonicToPrivateKey(config.MNEMONIC.split(' '));
@@ -44,6 +48,11 @@ async function main() {
         const req = playedRequest.parse(request.body);
         const telegramData = processTelegramData(req.tg_data, config.TELEGRAM_BOT_TOKEN!);
         return { ok: telegramData.ok }
+    })
+
+    fastify.post('/refund', async function handler(request, reply) {
+        const req = refundRequest.parse(request.body);
+        return { ok: true}
     })
 
     fastify.get('/config', async function handler(request, reply) {

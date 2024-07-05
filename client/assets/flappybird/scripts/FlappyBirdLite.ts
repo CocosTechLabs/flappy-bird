@@ -12,7 +12,7 @@ import { LogManager } from '../../scripts/framework/common/LogManager';
 import { Button } from 'cc';
 
 import { CocosGameFi, TonConnectUI, Address, toNano } from '@cocos-labs/game-sdk';
-import { TelegramWebApp } from './TelegramWebApp';
+import { TelegramWebApp } from '../../cocos-telegram-miniapps/scripts/telegram-web';
 import { ToolsView } from './ToolsView';
 
 const { ccclass, property } = _decorator;
@@ -84,7 +84,7 @@ export class FlappyBirdLite extends GameBase {
     protected onLoad() {
         LogManager.log(`Game:FlappyBird version:${FBGlobalData.VERSION}`);
 
-        TelegramWebApp.Instace.init().then(res => {
+        TelegramWebApp.Instance.init().then(res => {
             console.log("telegram web app init : ", res.success);
         });
 
@@ -107,6 +107,7 @@ export class FlappyBirdLite extends GameBase {
 
         this._rigesterEvent();
         this._initPhyEnv();
+        // this._setPhy2DDebug(true);
 
         this._initTonUI();
     }
@@ -200,6 +201,9 @@ export class FlappyBirdLite extends GameBase {
             });
         }
         
+        // if (this._isSingleGameMode()) {
+            
+        // }
     }
 
     update(deltaTime: number) {
@@ -239,6 +243,7 @@ export class FlappyBirdLite extends GameBase {
             this.touchLayer.on(Input.EventType.TOUCH_END, this._onTouchEnd, this);
         }
         if (this.startLayer) {
+            // this.startLayer.on(Input.EventType.TOUCH_END, this.startGame, this);
         }
         if (this.gameOverLayer) {
             this.gameOverLayer.on(Input.EventType.TOUCH_END, this.resetGame, this);
@@ -345,6 +350,7 @@ export class FlappyBirdLite extends GameBase {
     gameOver() {
         FBRecordManager.Instance().recordEnd();
         this.startLayer && (this.startLayer.active = false);
+        // this.gameOverLayer && (this.gameOverLayer.active = true);
         this._isGameRunning = false;
         this.bgScroll.setRun(false);
         this.groundScroll.setRun(false);
@@ -370,8 +376,11 @@ export class FlappyBirdLite extends GameBase {
     resetGame(needStart: boolean = true) {
         this.startLayer && (this.startLayer.active = true);
         this.gameOverLayer && (this.gameOverLayer.active = false);
+        // this._isGameRunning = true;
         this._score = 0;
         this._nCoin = 0;
+        // this.bgScroll.setRun(true);
+        // this.groundScroll.setRun(true);
         this._bird?.reset();
         this.levelMng?.reset();
         if (this.gameResult) {
@@ -409,6 +418,7 @@ export class FlappyBirdLite extends GameBase {
 
     private _updateScore() {
         if (this.scoreLbl) {
+            // this.scoreLbl.string = this._score.toString();
             this.scoreLbl.string = this._nCoin.toString();
         }
     }

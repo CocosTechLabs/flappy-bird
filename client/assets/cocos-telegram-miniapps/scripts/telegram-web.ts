@@ -15,10 +15,42 @@ const tgLoadPromise = new Promise<any>((resolve, reject) => {
                 }
             }, 100);
         };
-        script.onerror = () => reject(new Error("Unable to load GamePix sdk, please check logs."));
+        script.onerror = () => reject(new Error("Unable to load TelegramWebApp SDK, please check logs."));
         document.head.appendChild(script);
     }
 });
+
+export interface WebAppUser {
+    id: number;
+    is_bot: boolean;
+    first_name: string;
+    last_name?: string;
+    username?: string;
+    language_code?: string;
+    is_premium?: boolean;
+    added_to_attachment_menu?: boolean;
+    allows_write_to_pm?: boolean;
+    photo_url?: string;
+}
+export interface WebAppChat {
+    id: number;
+    type: 'private' | 'group' | 'supergroup' | 'channel';
+    title: string;
+    username?: string;
+    photo_url?: string;
+}
+export interface WebAppInitData {
+    query_id?: string;
+    user?: WebAppUser;
+    receiver?: WebAppUser;
+    chat?: WebAppChat;
+    chat_type?: 'private' | 'group' | 'supergroup' | 'channel';
+    chat_instance?: string;
+    start_param?: string;
+    can_send_after?: number;
+    auth_data: number;
+    hash: string;
+}
 
 @ccclass('TelegramWebApp')
 export class TelegramWebApp {
@@ -26,7 +58,7 @@ export class TelegramWebApp {
     private constructor() {
 
     }
-    public static get Instace(): TelegramWebApp {
+    public static get Instance(): TelegramWebApp {
         if (!TelegramWebApp._instance) {
             TelegramWebApp._instance = new TelegramWebApp();
         }
@@ -62,7 +94,7 @@ export class TelegramWebApp {
         return this._tgWebAppJS;
     }
 
-    public getTelegramUser() {
+    public getTelegramWebAppInitData(): WebAppInitData {
         if (!this._tgWebAppJS) {
             console.error("telegram web app is not inited!");
             return null;
@@ -70,7 +102,16 @@ export class TelegramWebApp {
         return this._tgWebAppJS.initDataUnsafe;
     }
 
-    public getTelegramUserInitData() {
+
+    public getTelegramUser(): WebAppUser {
+        if (!this._tgWebAppJS) {
+            console.error("telegram web app is not inited!");
+            return null;
+        } 
+        return this._tgWebAppJS.initDataUnsafe.user;
+    }
+
+    public getTelegramInitData(): string {
         if (!this._tgWebAppJS) {
             console.error("telegram web app is not inited!");
             return null;
