@@ -1,10 +1,9 @@
 import { Label } from 'cc';
 import { Sprite } from 'cc';
 import { _decorator, Component, Node } from 'cc';
-import { Address, CocosGameFi, toNano, AssetsSDK } from '@cocos-labs/game-sdk';
+import { Address, GameFi, toNano, TonTransferRequest } from '@ton/cocos-sdk';
 import { TelegramWebApp } from '../../cocos-telegram-miniapps/scripts/telegram-web';
 import { game } from 'cc';
-import { TonTransferRequest } from '@cocos-labs/game-sdk/lib/common/game-fi';
 import { assetManager, SpriteFrame, Texture2D } from 'cc';
 import { ImageAsset } from 'cc';
 import { TonAddressConfig } from './FlappyBirdLite';
@@ -21,14 +20,14 @@ export class ToolsView extends Component {
     @property(Label)
     searchLab: Label;
 
-    private _gameFi: CocosGameFi;
+    private _gameFi: GameFi;
     private _tonAddressConfig: TonAddressConfig;
 
     start() {
         this.searchLab.string = window.location.search;
     }
 
-    public setGameFi(gamefi: CocosGameFi) {
+    public setGameFi(gamefi: GameFi) {
         this._gameFi = gamefi;
         
         if (this._gameFi && this._gameFi.walletConnector.connected) {
@@ -96,7 +95,7 @@ export class ToolsView extends Component {
 
     public onShowJetton() {
         const jettonMasterAddress = Address.parse(this._tonAddressConfig.jettonAddress)
-        const show = async function (_gameFi: CocosGameFi, jettonMasterAddress: Address) {
+        const show = async function (_gameFi: GameFi, jettonMasterAddress: Address) {
             const openJetton = _gameFi.assetsSdk.openJetton(jettonMasterAddress)
             const jettonContent = await openJetton.getContent()
             const message = "jetton name: " + jettonContent.name +"\njetton decimals: " + jettonContent.decimals

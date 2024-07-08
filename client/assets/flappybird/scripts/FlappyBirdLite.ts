@@ -11,7 +11,7 @@ import { Countdown } from '../../scripts/framework/common/Countdown';
 import { LogManager } from '../../scripts/framework/common/LogManager';
 import { Button } from 'cc';
 
-import { CocosGameFi, TonConnectUI, Address, toNano } from '@cocos-labs/game-sdk';
+import { GameFi, TonConnectUI, Address, toNano } from '@ton/cocos-sdk';
 import { TelegramWebApp } from '../../cocos-telegram-miniapps/scripts/telegram-web';
 import { ToolsView } from './ToolsView';
 
@@ -78,7 +78,7 @@ export class FlappyBirdLite extends GameBase {
 
     private _bTonInit: boolean = false;
 
-    private _cocosGameFi: CocosGameFi;
+    private _cocosGameFi: GameFi;
     private _connectUI;
 
     protected onLoad() {
@@ -119,11 +119,11 @@ export class FlappyBirdLite extends GameBase {
         let uiconnector = new TonConnectUI({
             manifestUrl: 'https://ton-connect.github.io/demo-dapp-with-wallet/tonconnect-manifest.json'
         });
-        this._cocosGameFi = await CocosGameFi.create({ 
+        this._cocosGameFi = await GameFi.create({
             connector: uiconnector
-         });
+        });
         this._connectUI = this._cocosGameFi.walletConnector;
-  
+
         const unsubscribeModal = this._connectUI.onModalStateChange(state => {
             console.log("model state changed! : ", state);
 
