@@ -9,7 +9,7 @@ This is an example of a game developed on the Ton chain using the Cocos game eng
 * On-chain transactions
 * Sharing on Telegram Mini APP
 * Payment
-* Using [game-engines-sdk](https://github.com/CocosTechLabs/game-engines-sdk)
+* Using [game-engines-sdk](https://github.com/ton-org/game-engines-sdk)
 * Using [cocos-telegram-miniapps extension](https://github.com/CocosTechLabs/cocos-telegram-miniapps)
 
 ## Screenshots
@@ -21,6 +21,13 @@ This is an example of a game developed on the Ton chain using the Cocos game eng
 Import using cocos creator 3.8.3
 Build option configuration
     `Target Environments` > 0.5
+
+### cocos-telegram-miniapps extension
+```shell
+cd client/extensions/cocos-telegram-miniapps
+npm install
+npm run build
+```
 
 ### server
 Open `env_example` file, modify the configuration to .env
