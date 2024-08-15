@@ -8,7 +8,7 @@ CORS_ORIGIN=http://127.0.0.1:7456
 NETWORK=testnet
 
 # Your MNEMONIC, 24 words separated by spaces
-MNEMONIC=[]
+MNEMONIC="gentle city oppose ...."
 
 
 # Bot Token
