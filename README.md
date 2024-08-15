@@ -22,7 +22,15 @@ Import using cocos creator 3.8.3
 Build option configuration
     `Target Environments` > 0.5
 
+Install client dependencies:
+```shell
+cd client
+npm install
+```
+
 ### cocos-telegram-miniapps extension
+Install extension dependencies and build:
+
 ```shell
 cd client/extensions/cocos-telegram-miniapps
 npm install
@@ -30,10 +38,14 @@ npm run build
 ```
 
 ### server
-Open `env_example` file, modify the configuration to .env
+1. Copy `server/env_example` to `server/.env`
+2. Open [BotFather](https://t.me/BotFather), run `/newbot` command and fill your new bot token to `TELEGRAM_BOT_TOKEN` variable.
+3. Fill `MNEMONIC` variable with your test wallet seed phrase. You can create one using [assets-sdk](https://github.com/ton-community/assets-sdk) by running `assets-cli setup-env`.
+4. Install dependencies and run the server:
 ```shell
-$ npm install
-$ npm run start
+cd server
+npm install
+npm run start
 ```
 ## License
 
