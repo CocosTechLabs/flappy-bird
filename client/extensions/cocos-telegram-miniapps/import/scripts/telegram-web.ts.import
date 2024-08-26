@@ -1,4 +1,4 @@
-import { _decorator, sys} from 'cc';
+import { _decorator, sys } from 'cc';
 const { ccclass, property } = _decorator;
 
 
@@ -66,13 +66,13 @@ export class TelegramWebApp {
     }
 
     private _tgWebAppJS: any = null;
-    public async init() : Promise<{success: boolean}> {
+    public async init(): Promise<{ success: boolean }> {
         this._tgWebAppJS = await tgLoadPromise;
 
         if (this._tgWebAppJS) {
-            return Promise.resolve({success: true});
+            return Promise.resolve({ success: true });
         } else {
-            return Promise.resolve({success: false});
+            return Promise.resolve({ success: false });
         }
     }
 
@@ -81,13 +81,28 @@ export class TelegramWebApp {
             console.error("telegram web app is not inited!");
             return;
         }
-        console.log(url);
         this._tgWebAppJS.openTelegramLink(url);
     }
 
     public share(url: string, text?: string) {
         const shareUrl = 'https://t.me/share/url?url=' + url + '&' + new URLSearchParams({ text: text || '' }).toString();
         this.openTelegramLink(shareUrl);
+    }
+
+    public shareToStory(media_url: string, shareText?: string, widget_link_url?: string, widget_link_name?: string) {
+        if (!this._tgWebAppJS) {
+            console.error("telegram web app is not inited!");
+            return;
+        }
+        const widget_link = {
+            text: shareText,
+            widget_link: {
+                url: widget_link_url,
+                name: widget_link_name,
+            },
+        };
+        console.log(widget_link);
+        this._tgWebAppJS.shareToStory(media_url, widget_link);
     }
 
     public getTelegramWebApp() {
@@ -98,7 +113,7 @@ export class TelegramWebApp {
         if (!this._tgWebAppJS) {
             console.error("telegram web app is not inited!");
             return null;
-        } 
+        }
         return this._tgWebAppJS.initDataUnsafe;
     }
 
@@ -107,7 +122,7 @@ export class TelegramWebApp {
         if (!this._tgWebAppJS) {
             console.error("telegram web app is not inited!");
             return null;
-        } 
+        }
         return this._tgWebAppJS.initDataUnsafe.user;
     }
 
@@ -115,7 +130,7 @@ export class TelegramWebApp {
         if (!this._tgWebAppJS) {
             console.error("telegram web app is not inited!");
             return null;
-        } 
+        }
         return this._tgWebAppJS.initData;
     }
 
@@ -123,7 +138,7 @@ export class TelegramWebApp {
         if (!this._tgWebAppJS) {
             console.error("telegram web app is not inited!");
             return null;
-        } 
+        }
         this._tgWebAppJS.openInvoice(url, callback);
     }
 

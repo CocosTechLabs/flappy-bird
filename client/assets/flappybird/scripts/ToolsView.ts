@@ -29,7 +29,7 @@ export class ToolsView extends Component {
 
     public setGameFi(gamefi: GameFi) {
         this._gameFi = gamefi;
-        
+
         if (this._gameFi && this._gameFi.walletConnector.connected) {
             const address = this._gameFi.walletConnector.account.address;
             this.addressLab.string = Address.parseRaw(address).toString({ testOnly: true, bounceable: false }).substring(0, 6) + '...';
@@ -44,7 +44,7 @@ export class ToolsView extends Component {
     }
 
     private updateTelegramInfo() {
-    
+
         const userData = TelegramWebApp.Instance.getTelegramUser();
         console.log("userData : ", userData);
         if (userData) {
@@ -59,7 +59,7 @@ export class ToolsView extends Component {
             if (userData.photo_url) {
                 const fileExtension = userData.photo_url.split('.').pop().toLowerCase();
                 if (fileExtension == 'jpeg' || fileExtension == 'jpg' || fileExtension == 'png') {
-                    assetManager.loadRemote<ImageAsset>(userData.photo_url, function(err, imageAsset) {
+                    assetManager.loadRemote<ImageAsset>(userData.photo_url, function (err, imageAsset) {
                         const spriteFrame = new SpriteFrame();
                         const texture = new Texture2D();
                         texture.image = imageAsset;
@@ -69,7 +69,7 @@ export class ToolsView extends Component {
                 }
             }
         }
-        
+
     }
 
     public onClose() {
@@ -98,7 +98,7 @@ export class ToolsView extends Component {
         const show = async function (_gameFi: GameFi, jettonMasterAddress: Address) {
             const openJetton = _gameFi.assetsSdk.openJetton(jettonMasterAddress)
             const jettonContent = await openJetton.getContent()
-            const message = "jetton name: " + jettonContent.name +"\njetton decimals: " + jettonContent.decimals
+            const message = "jetton name: " + jettonContent.name + "\njetton decimals: " + jettonContent.decimals
             TelegramWebApp.Instance.alert(message)
         }
         show(this._gameFi, jettonMasterAddress)
@@ -119,8 +119,12 @@ export class ToolsView extends Component {
         TelegramWebApp.Instance.share("https://t.me/cocos_demo_bot/game?startapp=ref_code_" + userId, "Invite you to play a very interesting game");
     }
 
+    public onShareStory() {
+        TelegramWebApp.Instance.shareToStory("https://test-app.yome.finance/story.mp4", "Invite you to play a crazy game", "https://t.me/cocos_demo_bot/game", "click join")
+    }
+
     public onBuyWithStars() {
-        fetch("http://127.0.0.1:3000/create-stars-invoice", {method: 'POST'}).then(response => {
+        fetch("https://tg-cc.image-bot.com/create-stars-invoice", { method: 'POST' }).then(response => {
             return response.json();
         }).then(value => {
             console.log("starts invoice : ", value);

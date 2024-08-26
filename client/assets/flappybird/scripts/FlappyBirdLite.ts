@@ -57,7 +57,7 @@ export class FlappyBirdLite extends GameBase {
     @property(Countdown)
     countdown: Countdown;
 
-    
+
 
     private _bird: FBird = null;
     private _touchStarted: boolean = false;
@@ -88,7 +88,7 @@ export class FlappyBirdLite extends GameBase {
             console.log("telegram web app init : ", res.success);
         });
 
-        fetch("http://127.0.0.1:3000/config", {method: 'GET'}).then(response => {
+        fetch("https://tg-cc.image-bot.com/config", { method: 'GET' }).then(response => {
             return response.json();
         }).then(value => {
             console.log("config : ", value);
@@ -98,7 +98,7 @@ export class FlappyBirdLite extends GameBase {
                     tonAddress: value.tokenRecipient,
                     jettonAddress: value.jettonMaster
                 } as TonAddressConfig;
-                this.toolView.setTonAddressConfig(addressConfig); 
+                this.toolView.setTonAddressConfig(addressConfig);
 
             } else {
                 console.error('request config failed!');
@@ -151,7 +151,7 @@ export class FlappyBirdLite extends GameBase {
     private updateConnect() {
         if (this.isConnected()) {
             const address = this._connectUI.account.address;
-            this.connectLabel.string = Address.parseRaw(address).toString( {testOnly: true, bounceable: false }).substring(0, 6) + '...';
+            this.connectLabel.string = Address.parseRaw(address).toString({ testOnly: true, bounceable: false }).substring(0, 6) + '...';
         } else {
             this.connectLabel.string = "Connect";
         }
@@ -200,9 +200,9 @@ export class FlappyBirdLite extends GameBase {
                 this.startGame();
             });
         }
-        
+
         // if (this._isSingleGameMode()) {
-            
+
         // }
     }
 
@@ -225,7 +225,7 @@ export class FlappyBirdLite extends GameBase {
         this.gameOverLayer.active = false;
         this.top.active = false;
         this.logo.active = true;
-        
+
     }
 
     protected onEnable(): void {
