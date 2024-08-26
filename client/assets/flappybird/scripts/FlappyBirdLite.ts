@@ -167,6 +167,11 @@ export class FlappyBirdLite extends GameBase {
         }
     }
 
+    public evmConnect() {
+        //TODO: add evm wallet connect
+        console.log("evm wallet connect");
+    }
+
     start() {
         this.gameLoaded();
     }
