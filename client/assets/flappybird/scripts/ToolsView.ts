@@ -7,6 +7,7 @@ import { game } from 'cc';
 import { assetManager, SpriteFrame, Texture2D } from 'cc';
 import { ImageAsset } from 'cc';
 import { TonAddressConfig } from './FlappyBirdLite';
+import { WalletClient } from 'viem'
 const { ccclass, property } = _decorator;
 
 @ccclass('ToolsView')
@@ -22,6 +23,8 @@ export class ToolsView extends Component {
 
     private _gameFi: GameFi;
     private _tonAddressConfig: TonAddressConfig;
+
+    private _walletClient: WalletClient;
 
     start() {
         this.searchLab.string = window.location.search;
@@ -39,6 +42,11 @@ export class ToolsView extends Component {
 
         this.updateTelegramInfo();
     }
+
+    public setWalletClient(walletClient: WalletClient) {
+        this._walletClient = walletClient;
+    }
+
     public setTonAddressConfig(config: TonAddressConfig) {
         this._tonAddressConfig = config;
     }
@@ -137,6 +145,18 @@ export class ToolsView extends Component {
             }
         });
     }
+
+    public async onEvmSignMessage() {
+        const accounts = await this._walletClient.requestAddresses()
+        if (accounts.length == 0) {
+            return
+        }
+        await this._walletClient.signMessage({
+            message: "Hello, this is cocos game message.",
+            account: accounts[0]
+        })
+    }
+
 }
 
 

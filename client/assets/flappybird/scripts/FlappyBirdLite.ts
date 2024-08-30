@@ -18,6 +18,9 @@ import { WalletView } from './WalletView';
 import globalEvent from '../../scripts/framework/event/GlobalEvent';
 import { GameEvents } from './Events';
 
+// import { createWeb3Modal, defaultConfig, AppKit } from '@web3odal/ethers5';
+import { createWalletClient, custom, WalletClient } from 'viem'
+import { mainnet } from 'viem/chains'
 const { ccclass, property } = _decorator;
 
 export interface TonAddressConfig {
@@ -76,6 +79,9 @@ export class FlappyBirdLite extends GameBase {
     @property(Node)
     logo: Node;
 
+    @property(Label)
+    evmConnectLabel: Label;
+
     @property(ToolsView)
     toolView: ToolsView;
 
@@ -83,6 +89,8 @@ export class FlappyBirdLite extends GameBase {
 
     private _cocosGameFi: GameFi;
     private _connectUI;
+    // private _evmConnect: AppKit;
+    private _evmWalletClient: WalletClient;
 
     protected onLoad() {
         LogManager.log(`Game:FlappyBird version:${FBGlobalData.VERSION}`);
@@ -112,10 +120,66 @@ export class FlappyBirdLite extends GameBase {
         this._initPhyEnv();
         // this._setPhy2DDebug(true);
 
-        this._initTonUI();
+        this._initEvmConnect();
+        this._initTonConnect();
     }
 
-    async _initTonUI() {
+    _initEvmConnect() {
+        // // 1. Get projectId from https://cloud.walletconnect.com
+        // const projectId = 'a3c5251fe077f63e2fe1931521283512'
+
+        // // 2. Set chains
+        // const mainnet = {
+        //     chainId: 1,
+        //     name: 'Ethereum',
+        //     currency: 'ETH',
+        //     explorerUrl: 'https://etherscan.io',
+        //     rpcUrl: 'https://rpc.ankr.com/eth'
+        // }
+
+        // const bnbchain = {
+        //     chainId: 56,
+        //     name: 'BNB Smart Chain Mainnet',
+        //     currency: 'BNB',
+        //     explorerUrl: 'https://bscscan.com/',
+        //     rpcUrl: 'https://bsc-dataseed4.ninicoin.io'
+        // }
+
+        // // 3. Create your application's metadata object
+        // const metadata = {
+        //     name: 'My Website',
+        //     description: 'My Website description',
+        //     url: 'https://mywebsite.com', // url must match your domain & subdomain
+        //     icons: ['https://avatars.mywebsite.com/']
+        // }
+
+        // // 4. Create Ethers config
+        // const ethersConfig = defaultConfig({
+        //     /*Required*/
+        //     metadata,
+
+        //     /*Optional*/
+        //     enableEIP6963: true, // true by default
+        //     enableInjected: true, // true by default
+        //     defaultChainId: 56
+        // })
+
+        // // 5. Create a AppKit instance
+        // this._evmConnect = createWeb3Modal({
+        //     ethersConfig,
+        //     chains: [mainnet, bnbchain],
+        //     projectId,
+        //     enableAnalytics: true // Optional - defaults to your Cloud configuration
+        // })
+
+        // this._evmConnect.subscribeEvents(event => {
+        //     this.evmConnectEventHandle(event)
+        // });
+
+        // console.log("evm appkit init ok");
+    }
+
+    async _initTonConnect() {
 
         this.toolView.node.active = false;
 
@@ -160,6 +224,22 @@ export class FlappyBirdLite extends GameBase {
         }
     }
 
+    // private evmConnectEventHandle(event: any) {
+    //     if (event.data.event == "MODAL_CLOSE" || event.data.event == "CONNECT_SUCCESS") {
+    //         const caipAddress = this._evmConnect.getCaipAddress();
+    //         if (caipAddress != null) {
+    //             this.evmConnectLabel.string = caipAddress.slice(-6);
+    //             this._evmWalletClient = createWalletClient({
+    //                 chain: mainnet,
+    //                 transport: custom(window.ethereum! as any)
+    //             })
+    //         } else {
+    //             this.evmConnectLabel.string = "Connect";
+    //         }
+    //     }
+    //     console.log(event.data.event);
+    // }
+
     public async openModal() {
         if (!this._bTonInit) return;
 
@@ -171,11 +251,11 @@ export class FlappyBirdLite extends GameBase {
     }
 
     public evmConnect() {
-        //TODO: add evm wallet connect
         console.log("evm wallet connect");
-
         // 打开钱包
         globalEvent.emit(GameEvents.WALLET_SHOW);
+        // window.localStorage.clear()
+        // await this._evmConnect.open({ view: 'Connect' })
     }
 
     start() {
@@ -339,6 +419,7 @@ export class FlappyBirdLite extends GameBase {
     public onShowTools() {
         this.toolView.node.active = true;
         this.toolView.setGameFi(this._cocosGameFi);
+        this.toolView.setWalletClient(this._evmWalletClient);
     }
 
     startGame() {
