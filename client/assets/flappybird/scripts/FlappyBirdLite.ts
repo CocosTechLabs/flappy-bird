@@ -14,6 +14,9 @@ import { Button } from 'cc';
 import { GameFi, TonConnectUI, Address, toNano } from '@ton/cocos-sdk';
 import { TelegramWebApp } from '../../cocos-telegram-miniapps/scripts/telegram-web';
 import { ToolsView } from './ToolsView';
+import { WalletView } from './WalletView';
+import globalEvent from '../../scripts/framework/event/GlobalEvent';
+import { GameEvents } from './Events';
 
 const { ccclass, property } = _decorator;
 
@@ -170,6 +173,9 @@ export class FlappyBirdLite extends GameBase {
     public evmConnect() {
         //TODO: add evm wallet connect
         console.log("evm wallet connect");
+
+        // 打开钱包
+        globalEvent.emit(GameEvents.WALLET_SHOW);
     }
 
     start() {
