@@ -7,7 +7,6 @@ import { game } from 'cc';
 import { assetManager, SpriteFrame, Texture2D } from 'cc';
 import { ImageAsset } from 'cc';
 import { TonAddressConfig } from './FlappyBirdLite';
-import { WalletClient } from 'viem'
 const { ccclass, property } = _decorator;
 
 @ccclass('ToolsView')
@@ -23,8 +22,7 @@ export class ToolsView extends Component {
 
     private _gameFi: GameFi;
     private _tonAddressConfig: TonAddressConfig;
-
-    private _walletClient: WalletClient;
+    private serverHost: string = "http://127.0.0.1:8888";
 
     start() {
         this.searchLab.string = window.location.search;
@@ -43,9 +41,6 @@ export class ToolsView extends Component {
         this.updateTelegramInfo();
     }
 
-    public setWalletClient(walletClient: WalletClient) {
-        this._walletClient = walletClient;
-    }
 
     public setTonAddressConfig(config: TonAddressConfig) {
         this._tonAddressConfig = config;
@@ -128,11 +123,11 @@ export class ToolsView extends Component {
     }
 
     public onShareStory() {
-        TelegramWebApp.Instance.shareToStory("https://test-app.yome.finance/story.mp4", "Invite you to play a crazy game", "https://t.me/cocos_demo_bot/game", "click join")
+        TelegramWebApp.Instance.shareToStory(`${this.serverHost}/story.mp4`, "Invite you to play a crazy game", "https://t.me/cocos_demo_bot/game", "click join")
     }
 
     public onBuyWithStars() {
-        fetch("https://tg-cc.image-bot.com/create-stars-invoice", { method: 'POST' }).then(response => {
+        fetch(`${this.serverHost}/create-stars-invoice`, { method: 'POST' }).then(response => {
             return response.json();
         }).then(value => {
             console.log("starts invoice : ", value);
@@ -144,17 +139,6 @@ export class ToolsView extends Component {
                 console.error('request config failed!');
             }
         });
-    }
-
-    public async onEvmSignMessage() {
-        const accounts = await this._walletClient.requestAddresses()
-        if (accounts.length == 0) {
-            return
-        }
-        await this._walletClient.signMessage({
-            message: "Hello, this is cocos game message.",
-            account: accounts[0]
-        })
     }
 
 }

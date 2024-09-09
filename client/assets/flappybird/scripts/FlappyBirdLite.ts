@@ -14,11 +14,10 @@ import { Button } from 'cc';
 import { GameFi, TonConnectUI, Address, toNano } from '@ton/cocos-sdk';
 import { TelegramWebApp } from '../../cocos-telegram-miniapps/scripts/telegram-web';
 import { ToolsView } from './ToolsView';
-import { WalletView } from './WalletView';
 import globalEvent from '../../scripts/framework/event/GlobalEvent';
 import { GameEvents } from './Events';
 
-// import { createWeb3Modal, defaultConfig, AppKit } from '@web3odal/ethers5';
+import { createWeb3Modal, defaultConfig, AppKit } from '@cocos-labs/web3modal-ethers5';
 import { createWalletClient, custom, WalletClient } from 'viem'
 import { mainnet } from 'viem/chains'
 const { ccclass, property } = _decorator;
@@ -89,9 +88,9 @@ export class FlappyBirdLite extends GameBase {
 
     private _cocosGameFi: GameFi;
     private _connectUI;
-    // private _evmConnect: AppKit;
+    private _evmConnect: AppKit;
     private _evmWalletClient: WalletClient;
-
+    private serverHost: string = "http://127.0.0.1:8888";
     protected onLoad() {
         LogManager.log(`Game:FlappyBird version:${FBGlobalData.VERSION}`);
 
@@ -99,7 +98,7 @@ export class FlappyBirdLite extends GameBase {
             console.log("telegram web app init : ", res.success);
         });
 
-        fetch("https://tg-cc.image-bot.com/config", { method: 'GET' }).then(response => {
+        fetch(`${this.serverHost}/config`, { method: 'GET' }).then(response => {
             return response.json();
         }).then(value => {
             console.log("config : ", value);
@@ -125,58 +124,57 @@ export class FlappyBirdLite extends GameBase {
     }
 
     _initEvmConnect() {
-        // // 1. Get projectId from https://cloud.walletconnect.com
-        // const projectId = 'a3c5251fe077f63e2fe1931521283512'
+        // 1. Get projectId from https://cloud.walletconnect.com
+        const projectId = 'a3c5251fe077f63e2fe1931521283512'
 
-        // // 2. Set chains
-        // const mainnet = {
-        //     chainId: 1,
-        //     name: 'Ethereum',
-        //     currency: 'ETH',
-        //     explorerUrl: 'https://etherscan.io',
-        //     rpcUrl: 'https://rpc.ankr.com/eth'
-        // }
+        // 2. Set chains
+        const mainnet = {
+            chainId: 1,
+            name: 'Ethereum',
+            currency: 'ETH',
+            explorerUrl: 'https://etherscan.io',
+            rpcUrl: 'https://rpc.ankr.com/eth'
+        }
 
-        // const bnbchain = {
-        //     chainId: 56,
-        //     name: 'BNB Smart Chain Mainnet',
-        //     currency: 'BNB',
-        //     explorerUrl: 'https://bscscan.com/',
-        //     rpcUrl: 'https://bsc-dataseed4.ninicoin.io'
-        // }
+        const bnbchain = {
+            chainId: 56,
+            name: 'BNB Smart Chain Mainnet',
+            currency: 'BNB',
+            explorerUrl: 'https://bscscan.com/',
+            rpcUrl: 'https://bsc-dataseed4.ninicoin.io'
+        }
 
-        // // 3. Create your application's metadata object
-        // const metadata = {
-        //     name: 'My Website',
-        //     description: 'My Website description',
-        //     url: 'https://mywebsite.com', // url must match your domain & subdomain
-        //     icons: ['https://avatars.mywebsite.com/']
-        // }
+        // 3. Create your application's metadata object
+        const metadata = {
+            name: 'My Website',
+            description: 'My Website description',
+            url: 'https://mywebsite.com', // url must match your domain & subdomain
+            icons: ['https://avatars.mywebsite.com/']
+        }
 
-        // // 4. Create Ethers config
-        // const ethersConfig = defaultConfig({
-        //     /*Required*/
-        //     metadata,
+        // 4. Create Ethers config
+        const ethersConfig = defaultConfig({
+            /*Required*/
+            metadata,
 
-        //     /*Optional*/
-        //     enableEIP6963: true, // true by default
-        //     enableInjected: true, // true by default
-        //     defaultChainId: 56
-        // })
+            /*Optional*/
+            enableEIP6963: true, // true by default
+            enableInjected: true, // true by default
+            defaultChainId: 56
+        })
 
-        // // 5. Create a AppKit instance
-        // this._evmConnect = createWeb3Modal({
-        //     ethersConfig,
-        //     chains: [mainnet, bnbchain],
-        //     projectId,
-        //     enableAnalytics: true // Optional - defaults to your Cloud configuration
-        // })
+        // 5. Create a AppKit instance
+        this._evmConnect = createWeb3Modal({
+            ethersConfig,
+            chains: [mainnet, bnbchain],
+            projectId,
+            enableAnalytics: false // Optional - defaults to your Cloud configuration
+        })
 
-        // this._evmConnect.subscribeEvents(event => {
-        //     this.evmConnectEventHandle(event)
-        // });
+        this._evmConnect.subscribeEvents(event => {
+            this.evmConnectEventHandle(event)
+        });
 
-        // console.log("evm appkit init ok");
     }
 
     async _initTonConnect() {
@@ -224,21 +222,39 @@ export class FlappyBirdLite extends GameBase {
         }
     }
 
-    // private evmConnectEventHandle(event: any) {
-    //     if (event.data.event == "MODAL_CLOSE" || event.data.event == "CONNECT_SUCCESS") {
-    //         const caipAddress = this._evmConnect.getCaipAddress();
-    //         if (caipAddress != null) {
-    //             this.evmConnectLabel.string = caipAddress.slice(-6);
-    //             this._evmWalletClient = createWalletClient({
-    //                 chain: mainnet,
-    //                 transport: custom(window.ethereum! as any)
-    //             })
-    //         } else {
-    //             this.evmConnectLabel.string = "Connect";
-    //         }
-    //     }
-    //     console.log(event.data.event);
-    // }
+    private async evmConnectEventHandle(event: any) {
+        if (event.data.event == "MODAL_CLOSE" || event.data.event == "CONNECT_SUCCESS") {
+            await this.updateWalletAddress();
+        }
+    }
+
+    private async updateWalletAddress() {
+        let provider = window.ethereum! as any
+
+        if (typeof window.okxwallet !== 'undefined') {
+            provider = window.okxwallet!;
+        }
+
+        if (typeof window.bitkeep !== 'undefined' && window.bitkeep.ethereum !== 'undefined') {
+            provider = window.bitkeep!.ethereum;
+        }
+
+        this._evmWalletClient = createWalletClient({
+            chain: mainnet,
+            transport: custom(provider as any)
+        })
+        const addresses = await this._evmWalletClient.requestAddresses()
+        if (addresses.length > 0) {
+            this.evmConnectLabel.string = addresses[0].slice(-6);
+            await this._evmWalletClient.signMessage({
+                message: "Hello, this is cocos game message.",
+                account: addresses[0]
+            })
+
+        } else {
+            this.evmConnectLabel.string = "Connect";
+        }
+    }
 
     public async openModal() {
         if (!this._bTonInit) return;
@@ -251,11 +267,17 @@ export class FlappyBirdLite extends GameBase {
     }
 
     public evmConnect() {
-        console.log("evm wallet connect");
-        // 打开钱包
-        globalEvent.emit(GameEvents.WALLET_SHOW);
-        // window.localStorage.clear()
-        // await this._evmConnect.open({ view: 'Connect' })
+        if (typeof window.ethereum === 'undefined' &&
+            typeof window.okxwallet === 'undefined' &&
+            typeof window.bitkeep === 'undefined'
+        ) {
+            globalEvent.emit(GameEvents.WALLET_SHOW);
+            return;
+        }
+
+        this.updateWalletAddress()
+        // this._evmConnect.open({ view: 'Connect' })
+        console.log(navigator.userAgent);
     }
 
     start() {
@@ -419,7 +441,6 @@ export class FlappyBirdLite extends GameBase {
     public onShowTools() {
         this.toolView.node.active = true;
         this.toolView.setGameFi(this._cocosGameFi);
-        this.toolView.setWalletClient(this._evmWalletClient);
     }
 
     startGame() {

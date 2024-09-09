@@ -14,6 +14,7 @@ export class WalletView extends Component {
 
     private backgroundOpacity: UIOpacity = null;
     private panelUITransform: UITransform = null;
+    private gameUrl = "http://127.0.0.1:8888";
 
     protected onLoad(): void {
         this.backgroundOpacity = this.background.getComponent(UIOpacity);
@@ -42,31 +43,44 @@ export class WalletView extends Component {
             .call(() => {
                 this.background.active = true;
             })
-            .to(0.2, {opacity: 140})
+            .to(0.2, { opacity: 140 })
             .start();
         tween(this.panel)
-            .to(0.4, {position: v3(0, - size.height * 0.5 - 30, this.panel.position.z)})
+            .to(0.4, { position: v3(0, - size.height * 0.5 - 30, this.panel.position.z) })
             .start();
     }
 
     public hide() {
         let size = View.instance.getVisibleSize();
         tween(this.backgroundOpacity)
-            .to(0.2, {opacity: 0})
+            .to(0.2, { opacity: 0 })
             .call(() => {
                 this.background.active = false;
             })
             .start();
         tween(this.panel)
-            .to(0.4, {position: v3(0, - this.panelUITransform.height - size.height, this.panel.position.z)})
+            .to(0.4, { position: v3(0, - this.panelUITransform.height - size.height, this.panel.position.z) })
             .start();
     }
 
-    public tonConnect() {
-        console.log("ton Connect...");
+    public metamaskConnect() {
+        this.openLink("https://metamask.app.link/dapp/" + this.gameUrl)
     }
-    public evmConnect() {
-        console.log("evm Connect...");
+
+    public bitgetConnect() {
+        this.openLink("https://bkcode.vip/?action=dapp&url=" + this.gameUrl)
+    }
+
+    public okxConnect() {
+        this.openLink("https://www.okx.com/download?deeplink=okx://wallet/dapp/url?dappUrl=" + encodeURIComponent(this.gameUrl))
+    }
+
+    public openLink(url: string) {
+        if (window.Telegram && window.Telegram.WebApp) {
+            window.Telegram.WebApp.openLink(url);
+        } else {
+            window.open(url, "_blank");
+        }
     }
 }
 
