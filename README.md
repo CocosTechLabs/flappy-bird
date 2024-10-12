@@ -12,6 +12,10 @@ This is an example of a game developed on the Ton chain using the Cocos game eng
 * Using [game-engines-sdk](https://github.com/ton-org/game-engines-sdk)
 * Using [cocos-telegram-miniapps extension](https://github.com/CocosTechLabs/cocos-telegram-miniapps)
 
+## Demo Telegram APP
+https://t.me/cocos_demo_bot/game
+
+
 ## Screenshots
 
 ![game screenshots](./image/game_screenshots.png)
