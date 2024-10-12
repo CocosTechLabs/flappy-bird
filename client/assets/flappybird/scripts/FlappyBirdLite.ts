@@ -20,6 +20,7 @@ import { GameEvents } from './Events';
 import { createWeb3Modal, defaultConfig, AppKit } from '@cocos-labs/web3modal-ethers5';
 import { createWalletClient, custom, WalletClient } from 'viem'
 import { mainnet } from 'viem/chains'
+import { Config } from './Config';
 const { ccclass, property } = _decorator;
 
 export interface TonAddressConfig {
@@ -90,7 +91,7 @@ export class FlappyBirdLite extends GameBase {
     private _connectUI;
     private _evmConnect: AppKit;
     private _evmWalletClient: WalletClient;
-    private serverHost: string = "http://127.0.0.1:8888";
+    private serverHost: string = Config.serverHost;
     protected onLoad() {
         LogManager.log(`Game:FlappyBird version:${FBGlobalData.VERSION}`);
 
@@ -168,8 +169,15 @@ export class FlappyBirdLite extends GameBase {
             ethersConfig,
             chains: [mainnet, bnbchain],
             projectId,
-            enableAnalytics: false // Optional - defaults to your Cloud configuration
+            enableAnalytics: false, // Optional - defaults to your Cloud configuration
+            auth: {
+                email: false,
+                showWallets: false,
+                walletFeatures: false,
+                socials: []
+            }
         })
+
 
         this._evmConnect.subscribeEvents(event => {
             this.evmConnectEventHandle(event)
@@ -185,7 +193,8 @@ export class FlappyBirdLite extends GameBase {
             manifestUrl: 'https://ton-connect.github.io/demo-dapp-with-wallet/tonconnect-manifest.json'
         });
         this._cocosGameFi = await GameFi.create({
-            connector: uiconnector
+            connector: uiconnector,
+            network: "testnet"
         });
         this._connectUI = this._cocosGameFi.walletConnector;
 
@@ -271,13 +280,15 @@ export class FlappyBirdLite extends GameBase {
             typeof window.okxwallet === 'undefined' &&
             typeof window.bitkeep === 'undefined'
         ) {
+            if (isPC()) {
+                this._evmConnect.open({ view: 'Connect' })
+                return
+            }
             globalEvent.emit(GameEvents.WALLET_SHOW);
             return;
         }
 
         this.updateWalletAddress()
-        // this._evmConnect.open({ view: 'Connect' })
-        console.log(navigator.userAgent);
     }
 
     start() {
@@ -550,3 +561,10 @@ export class FlappyBirdLite extends GameBase {
 }
 
 
+const isPC = () => {
+    const userAgent = navigator.userAgent.toLowerCase();
+    const mobileKeywords = [
+        'android', 'webos', 'iphone', 'ipad', 'ipod', 'blackberry', 'windows phone'
+    ];
+    return !mobileKeywords.some(keyword => userAgent.includes(keyword));
+};

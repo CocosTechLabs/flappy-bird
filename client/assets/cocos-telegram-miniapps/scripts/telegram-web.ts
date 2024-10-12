@@ -84,8 +84,16 @@ export class TelegramWebApp {
         this._tgWebAppJS.openTelegramLink(url);
     }
 
+    public openLink(url: string, options: any = {}) {
+        if (!this._tgWebAppJS) {
+            console.error("telegram web app is not inited!");
+            return;
+        }
+        this._tgWebAppJS.openLink(url, options);
+    }
+
     public share(url: string, text?: string) {
-        const shareUrl = 'https://t.me/share/url?url=' + url + '&' + new URLSearchParams({ text: text || '' }).toString();
+        const shareUrl = 'https://t.me/share/url?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(text || '');
         this.openTelegramLink(shareUrl);
     }
 

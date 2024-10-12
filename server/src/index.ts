@@ -4,9 +4,10 @@ import fetch from 'node-fetch';
 import { config } from './config';
 import { processTelegramData } from './telegram';
 import { z } from 'zod';
-import { Address, WalletContractV4 } from '@ton/ton';
+import { WalletContractV4 } from '@ton/ton';
 import { mnemonicToPrivateKey } from '@ton/crypto';
 import TelegramBot from 'node-telegram-bot-api';
+import { createAlchemyPayOrder, CreateOrderParams, getAlchemyPayToken } from './alchemypay';
 
 const playedRequest = z.object({
     tg_data: z.string(),
@@ -52,7 +53,7 @@ async function main() {
 
     fastify.post('/refund', async function handler(request, reply) {
         const req = refundRequest.parse(request.body);
-        return { ok: true}
+        return { ok: true }
     })
 
     fastify.get('/config', async function handler(request, reply) {
@@ -85,6 +86,29 @@ async function main() {
             console.error(error)
         }
         return { ok: false }
+    })
+    fastify.post('/create-alchemypay-link', async function handler(request, reply) {
+        // Replace with the user's email address
+        const token = await getAlchemyPayToken({ email: 'xxxx@gmail.com' });
+        const merchantOrderNo = "O" + String(Date.now());
+        // This is for demonstration only and needs to be replaced according to business needs.
+        const orderParams: CreateOrderParams = {
+            side: "BUY",
+            cryptoCurrency: "USDT",
+            merchantOrderNo: merchantOrderNo,
+            // Replace with the user's payment address
+            address: "0x86064d133988c595412d847C7bf47847BcA1E822",
+            network: "BSC",
+            fiatCurrency: "USD",
+            amount: "10",
+            depositType: 2,
+            payWayCode: "10001",
+            redirectUrl: "",
+            callbackUrl: "",
+        };
+        const order = await createAlchemyPayOrder(orderParams, token.data.accessToken);
+
+        return { ok: true, link: order.data.payUrl }
     })
 
     try {

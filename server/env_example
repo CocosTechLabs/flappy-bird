@@ -13,3 +13,8 @@ MNEMONIC="gentle city oppose ...."
 
 # Bot Token
 TELEGRAM_BOT_TOKEN=
+
+# Alchemy Pay
+ALCHEMYPAY_SECRETKEY=
+ALCHEMYPAY_APPID=
+ALCHEMYPAY_DOMAIN=

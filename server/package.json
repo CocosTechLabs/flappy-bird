@@ -20,6 +20,8 @@
     "@ton/core": "0.56.0",
     "@ton/crypto": "3.2.0",
     "@ton/ton": "13.11.0",
+    "@types/axios": "^0.14.0",
+    "axios": "^1.7.7",
     "dotenv": "16.3.1",
     "fastify": "4.22.2",
     "node-fetch": "2.7.0",

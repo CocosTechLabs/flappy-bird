@@ -7,6 +7,7 @@ import { game } from 'cc';
 import { assetManager, SpriteFrame, Texture2D } from 'cc';
 import { ImageAsset } from 'cc';
 import { TonAddressConfig } from './FlappyBirdLite';
+import { Config } from './Config';
 const { ccclass, property } = _decorator;
 
 @ccclass('ToolsView')
@@ -22,7 +23,7 @@ export class ToolsView extends Component {
 
     private _gameFi: GameFi;
     private _tonAddressConfig: TonAddressConfig;
-    private serverHost: string = "http://127.0.0.1:8888";
+    private serverHost: string = Config.serverHost;
 
     start() {
         this.searchLab.string = window.location.search;
@@ -139,6 +140,19 @@ export class ToolsView extends Component {
                 console.error('request config failed!');
             }
         });
+    }
+
+    public onCryptoBuy() {
+        fetch(`${this.serverHost}/create-alchemypay-link`, { method: 'POST' }).then(response => {
+            return response.json();
+        }).then(value => {
+            if (value.ok) {
+                TelegramWebApp.Instance.openLink(value.link, { "try_instant_view": true })
+            } else {
+                console.error('request config failed!');
+            }
+        });
+
     }
 
 }

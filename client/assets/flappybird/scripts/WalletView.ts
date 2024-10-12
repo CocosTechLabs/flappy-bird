@@ -1,6 +1,7 @@
 import { _decorator, Component, Node, UIOpacity, tween, Vec2, UITransform, v3, View, ScrollView } from 'cc';
 import globalEvent from '../../scripts/framework/event/GlobalEvent';
 import { GameEvents } from './Events';
+import { Config } from './Config';
 const { ccclass, property } = _decorator;
 
 @ccclass('WalletView')
@@ -14,7 +15,7 @@ export class WalletView extends Component {
 
     private backgroundOpacity: UIOpacity = null;
     private panelUITransform: UITransform = null;
-    private gameUrl = "http://127.0.0.1:8888";
+    private gameUrl = Config.serverHost;
 
     protected onLoad(): void {
         this.backgroundOpacity = this.background.getComponent(UIOpacity);

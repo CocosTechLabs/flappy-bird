@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import {Network} from "@orbs-network/ton-access";
+import { Network } from "@orbs-network/ton-access";
 
 dotenv.config();
 
@@ -35,12 +35,27 @@ if (!process.env.TELEGRAM_BOT_TOKEN) {
   throw new Error('TELEGRAM_BOT_TOKEN is not set');
 }
 
+if (!process.env.ALCHEMYPAY_APPID) {
+  throw new Error('ALCHEMYPAY_APPID is not set');
+}
+
+if (!process.env.ALCHEMYPAY_SECRETKEY) {
+  throw new Error('ALCHEMYPAY_SECRETKEY is not set');
+}
+
+if (!process.env.ALCHEMYPAY_DOMAIN) {
+  throw new Error('ALCHEMYPAY_DOMAIN is not set');
+}
+
 export interface DeployConfig {
   CORS_ENABLED: boolean;
   CORS_ORIGIN?: string;
   NETWORK: Network;
   MNEMONIC: string;
   TELEGRAM_BOT_TOKEN: string;
+  ALCHEMYPAY_APPID: string;
+  ALCHEMYPAY_SECRETKEY: string;
+  ALCHEMYPAY_DOMAIN: string;
 }
 
 export const deployConfig: DeployConfig = {
@@ -49,4 +64,7 @@ export const deployConfig: DeployConfig = {
   NETWORK: process.env.NETWORK,
   MNEMONIC: process.env.MNEMONIC,
   TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN,
+  ALCHEMYPAY_APPID: process.env.ALCHEMYPAY_APPID,
+  ALCHEMYPAY_SECRETKEY: process.env.ALCHEMYPAY_SECRETKEY,
+  ALCHEMYPAY_DOMAIN: process.env.ALCHEMYPAY_DOMAIN,
 };
